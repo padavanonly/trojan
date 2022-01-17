@@ -32,6 +32,7 @@ void Config::load(const string &filename) {
     populate(tree);
 }
 
+// parse json to Config class, by calling function that be overloaded with same name.
 void Config::populate(const string &JSON) {
     istringstream s(JSON);
     ptree tree;
@@ -39,6 +40,7 @@ void Config::populate(const string &JSON) {
     populate(tree);
 }
 
+// real function to parse json.
 void Config::populate(const ptree &tree) {
     string rt = tree.get("run_type", string("client"));
     if (rt == "server") {

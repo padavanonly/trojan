@@ -22,7 +22,7 @@
 
 #include <cstdint>
 #include <map>
-#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ptree.hpp>    // used to parse json
 #include "log.h"
 
 class Config {

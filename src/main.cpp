@@ -22,12 +22,13 @@
 #include <boost/asio/signal_set.hpp>
 #include <boost/program_options.hpp>
 #include <boost/version.hpp>
-// #include <openssl/opensslv.h>
+// #include <openssl/opensslv.h>    // this header might be useless.
 #ifdef ENABLE_MYSQL
 #include <mysql.h>
 #endif // ENABLE_MYSQL
 #include "core/service.h"
-#include "core/version.h"
+#include "core/config.h"    // explicit include config.h
+#include "core/version.h"   // very simple header, just for recording version info.
 using namespace std;
 using namespace boost::asio;
 namespace po = boost::program_options;
@@ -36,13 +37,16 @@ namespace po = boost::program_options;
 #define DEFAULT_CONFIG "config.json"
 #endif // DEFAULT_CONFIG
 
+// signal_async_wait listens signals in sig and do correspond action.
 void signal_async_wait(signal_set &sig, Service &service, bool &restart) {
+    // handle sig asynchronous with lambda function.
     sig.async_wait([&](const boost::system::error_code error, int signum) {
         if (error) {
             return;
         }
         Log::log_with_date_time("got signal: " + to_string(signum), Log::WARN);
         switch (signum) {
+            // interrupt/termination signal, stop trojan.
             case SIGINT:
             case SIGTERM:
                 service.stop();
@@ -65,8 +69,8 @@ int main(int argc, const char *argv[]) {
     try {
         Log::log("Welcome to trojan " + Version::get_version(), Log::FATAL);
         string config_file;
-        string log_file;
         string keylog_file;
+        string log_file;
         bool test;
         po::options_description desc("options");
         desc.add_options()
