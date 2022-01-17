@@ -139,6 +139,7 @@ bool Config::sip003() {
     return true;
 }
 
+// Config::SHA224 encodes message by SHA224 and returns encoded string.
 string Config::SHA224(const string &message) {
     uint8_t digest[EVP_MAX_MD_SIZE];
     char mdString[(EVP_MAX_MD_SIZE << 1) + 1];

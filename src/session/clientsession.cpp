@@ -132,9 +132,11 @@ void ClientSession::udp_async_write(const string &data, const udp::endpoint &end
     });
 }
 
+// ClientSession::in_recv parses socks5 req from such as browser or other client.
 void ClientSession::in_recv(const string &data) {
     switch (status) {
         case HANDSHAKE: {
+            // start: 1st stage: browser -> client
             if (data.length() < 2 || data[0] != 5 || data.length() != (unsigned int)(unsigned char)data[1] + 2) {
                 Log::log_with_endpoint(in_endpoint, "unknown protocol", Log::ERROR);
                 destroy();
@@ -153,17 +155,23 @@ void ClientSession::in_recv(const string &data) {
                 status = INVALID;
                 return;
             }
+            // end: 1st stage: only support 0x00 method for socks 5
+
+            // 2nd stage: client -> browser
             in_async_write(string("\x05\x00", 2));
             break;
         }
         case REQUEST: {
+            // start: 3nd stage: browser -> client
             if (data.length() < 7 || data[0] != 5 || data[2] != 0) {
                 Log::log_with_endpoint(in_endpoint, "bad request", Log::ERROR);
                 destroy();
                 return;
             }
+            // write trojan header
             out_write_buf = config.password.cbegin()->first + "\r\n" + data[1] + data.substr(3) + "\r\n";
             TrojanRequest req;
+            // parse header, if exception, disconnect it
             if (req.parse(out_write_buf) == -1) {
                 Log::log_with_endpoint(in_endpoint, "unsupported command", Log::ERROR);
                 in_async_write(string("\x05\x07\x00\x01\x00\x00\x00\x00\x00\x00", 10));

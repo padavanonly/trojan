@@ -36,8 +36,8 @@ private:
     } status;
     bool is_udp{};
     bool first_packet_recv;
-    boost::asio::ip::tcp::socket in_socket;
-    boost::asio::ssl::stream<boost::asio::ip::tcp::socket>out_socket;
+    boost::asio::ip::tcp::socket in_socket;                             // listen from browser
+    boost::asio::ssl::stream<boost::asio::ip::tcp::socket>out_socket;   // connect to server
     void destroy();
     void in_async_read();
     void in_async_write(const std::string &data);

@@ -59,7 +59,7 @@ Service::Service(Config &config, bool test) :
         tcp::resolver resolver(io_context);
         tcp::endpoint listen_endpoint = *resolver.resolve(config.local_addr, to_string(config.local_port)).begin();
         socket_acceptor.open(listen_endpoint.protocol());
-        socket_acceptor.set_option(tcp::acceptor::reuse_address(true));
+        socket_acceptor.set_option(tcp::acceptor::reuse_address(true));     // default enable SO_REUSEADDR
 
         if (config.tcp.reuse_port) {
 #ifdef ENABLE_REUSE_PORT
@@ -83,6 +83,8 @@ Service::Service(Config &config, bool test) :
     if (!config.ssl.curves.empty()) {
         SSL_CTX_set1_curves_list(native_context, config.ssl.curves.c_str());
     }
+
+    // parse SSL certificate for server.
     if (config.run_type == Config::SERVER) {
         ssl_context.use_certificate_chain_file(config.ssl.cert);
         ssl_context.set_password_callback([this](size_t, context_base::password_purpose) {
@@ -243,6 +245,7 @@ Service::Service(Config &config, bool test) :
 #endif // ENABLE_TLS13_CIPHERSUITES
     }
 
+    // set socket options
     if (!test) {
         if (config.tcp.no_delay) {
             socket_acceptor.set_option(tcp::no_delay(true));
@@ -306,6 +309,8 @@ void Service::stop() {
     io_context.stop();
 }
 
+// Service::async_accept accepts traffic from client then handle it.
+// if-else condition can be refactored.
 void Service::async_accept() {
     shared_ptr<Session>session(nullptr);
     if (config.run_type == Config::SERVER) {
@@ -373,6 +378,7 @@ void Service::udp_async_read() {
     });
 }
 
+// why don't call this function context() ?
 boost::asio::io_context &Service::service() {
     return io_context;
 }
