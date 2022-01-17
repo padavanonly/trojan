@@ -22,7 +22,7 @@
 #include <boost/asio/signal_set.hpp>
 #include <boost/program_options.hpp>
 #include <boost/version.hpp>
-#include <openssl/opensslv.h>
+// #include <openssl/opensslv.h>
 #ifdef ENABLE_MYSQL
 #include <mysql.h>
 #endif // ENABLE_MYSQL
