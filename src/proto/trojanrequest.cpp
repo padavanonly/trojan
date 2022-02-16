@@ -41,17 +41,11 @@ int TrojanRequest::parse(const string &data) {
 }
 
 string TrojanRequest::generate(const string &password, const string &domainname, uint16_t port, bool tcp) {
-    string ret = password + "\r\n";
+    string ret; 
     if (tcp) {
-        ret += '\x01';
+        ret=string().append(password).append("\r\n").append("\x01").append("\x03").append(1,char(uint8_t(domainname.length()))).append(domainname).append(1,char(uint8_t(port >> 8))).append(1,char(uint8_t(port & 0xFF))).append( "\r\n");
     } else {
-        ret += '\x03';
+        ret=string().append(password).append("\r\n").append("\x03").append("\x03").append(1,char(uint8_t(domainname.length()))).append(domainname).append(1,char(uint8_t(port >> 8))).append(1,char(uint8_t(port & 0xFF))).append( "\r\n");
     }
-    ret += '\x03';
-    ret += char(uint8_t(domainname.length()));
-    ret += domainname;
-    ret += char(uint8_t(port >> 8));
-    ret += char(uint8_t(port & 0xFF));
-    ret += "\r\n";
     return ret;
 }
