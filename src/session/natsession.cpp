@@ -219,7 +219,7 @@ void NATSession::in_recv(const string &data) {
     if (status == CONNECT) {
         sent_len += data.length();
         first_packet_recv = true;
-        out_write_buf += data;
+        out_write_buf.append(data);
     } else if (status == FORWARD) {
         sent_len += data.length();
         out_async_write(data);

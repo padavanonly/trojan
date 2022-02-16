@@ -171,7 +171,7 @@ void UDPForwardSession::in_recv(const string &data) {
         status = FORWARDING;
         out_async_write(packet);
     } else {
-        out_write_buf += packet;
+        out_write_buf.append(packet);
     }
 }
 
@@ -179,7 +179,7 @@ void UDPForwardSession::out_recv(const string &data) {
     if (status == FORWARD || status == FORWARDING) {
         gc_timer.cancel();
         timer_async_wait();
-        udp_data_buf += data;
+        udp_data_buf.append(data);
         for (;;) {
             UDPPacket packet;
             size_t packet_len;

@@ -41,22 +41,12 @@ bool UDPPacket::parse(const string &data, size_t &udp_packet_len) {
 
 string UDPPacket::generate(const udp::endpoint &endpoint, const string &payload) {
     string ret = SOCKS5Address::generate(endpoint);
-    ret += char(uint8_t(payload.length() >> 8));
-    ret += char(uint8_t(payload.length() & 0xFF));
-    ret += "\r\n";
-    ret += payload;
+    ret.append(1,char(uint8_t(payload.length() >> 8))).append(1,char(uint8_t(payload.length() & 0xFF))).append("\r\n").append(payload);
     return ret;
 }
 
 string UDPPacket::generate(const string &domainname, uint16_t port, const string &payload) {
     string ret = "\x03";
-    ret += char(uint8_t(domainname.length()));
-    ret += domainname;
-    ret += char(uint8_t(port >> 8));
-    ret += char(uint8_t(port & 0xFF));
-    ret += char(uint8_t(payload.length() >> 8));
-    ret += char(uint8_t(payload.length() & 0xFF));
-    ret += "\r\n";
-    ret += payload;
+    ret.append(1,char(uint8_t(domainname.length()))).append(domainname).append(1,char(uint8_t(port >> 8))).append(1,char(uint8_t(port & 0xFF))).append(1,char(uint8_t(payload.length() >> 8))).append(1,char(uint8_t(payload.length() & 0xFF))).append("\r\n").append(payload);
     return ret;
 }

@@ -194,7 +194,7 @@ void ClientSession::in_recv(const string &data) {
         case CONNECT: {
             sent_len += data.length();
             first_packet_recv = true;
-            out_write_buf += data;
+            out_write_buf.append(data);
             break;
         }
         case FORWARD: {
@@ -309,7 +309,7 @@ void ClientSession::out_recv(const string &data) {
         recv_len += data.length();
         in_async_write(data);
     } else if (status == UDP_FORWARD) {
-        udp_data_buf += data;
+        udp_data_buf.append(data);
         udp_sent();
     }
 }
@@ -345,7 +345,7 @@ void ClientSession::udp_recv(const string &data, const udp::endpoint&) {
     sent_len += length;
     if (status == CONNECT) {
         first_packet_recv = true;
-        out_write_buf += packet;
+        out_write_buf.append(packet);
     } else if (status == UDP_FORWARD) {
         out_async_write(packet);
     }

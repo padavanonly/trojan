@@ -239,7 +239,7 @@ void ServerSession::in_recv(const string &data) {
         sent_len += data.length();
         out_async_write(data);
     } else if (status == UDP_FORWARD) {
-        udp_data_buf += data;
+        udp_data_buf.append(data);
         udp_sent();
     }
 }
