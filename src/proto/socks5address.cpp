@@ -92,7 +92,6 @@ string SOCKS5Address::generate(const udp::endpoint &endpoint) {
             ret.append(1,char(ip[i]));
         }
     }
-    ret.append(1,char(uint8_t(endpoint.port() >> 8)));
-    ret.append(char(uint8_t(endpoint.port() & 0xFF)));
+    ret.append(1,char(uint8_t(endpoint.port() >> 8))).append(1,char(uint8_t(endpoint.port() & 0xFF)));
     return ret;
 }
